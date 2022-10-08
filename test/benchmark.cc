@@ -3,14 +3,21 @@
 #include <fcntl.h>
 #include <iostream>
 #include <stdlib.h>
-#include <sys/mman.h>
-#include <sys/shm.h>
-#include <sys/stat.h>
+#include <sys/mman.h> /*memory management declarations, 
+https://pubs.opengroup.org/onlinepubs/009604499/basedefs/sys/mman.h.html */
+#include <sys/shm.h> /* shared memory facility, 
+https://pubs.opengroup.org/onlinepubs/7908799/xsh/sysshm.h.html */
+#include <sys/stat.h> /*data returned by the stat() function, 
+https://pubs.opengroup.org/onlinepubs/007904975/basedefs/sys/stat.h.html */
 #include <sys/types.h>
 #include <unistd.h>
 
 #include "client.h"
 
+/***
+ * benchmarking the creation and deleting latency of 
+ * objects of various sizes.
+ * **/
 void test(LightningClient &client, int object_size) {
   char *a = new char[object_size];
   for (int i = 0; i < object_size; i++) {
@@ -26,7 +33,9 @@ void test(LightningClient &client, int object_size) {
   for (uint64_t i = 0; i < num_tests; i++) {
     uint8_t *ptr;
     int status = client.Create(i, &ptr, object_size);
-    memcpy(ptr, a, object_size);
+    memcpy(ptr, a, object_size); 
+    /*void * memcpy ( void * destination, const void * source, size_t num );
+    https://cplusplus.com/reference/cstring/memcpy/*/
     status = client.Seal(i);
   }
 
